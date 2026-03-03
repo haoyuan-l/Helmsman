@@ -7,6 +7,34 @@ from typing import Dict, Any, List, Optional
 import asyncio
 from langgraph.types import Command
 import sys
+from pathlib import Path
+
+# =============================================================================
+# LOADING API KEYS FROM .ENV FILE
+# =============================================================================
+
+try:
+    from dotenv import load_dotenv
+    DOTENV_AVAILABLE = True
+except ImportError:
+    DOTENV_AVAILABLE = False
+    print("python-dotenv not installed. Run: pip install python-dotenv")
+
+def load_env_file():
+    """Load environment variables from .env file if it exists."""
+    if not DOTENV_AVAILABLE:
+        return False
+    
+    # Look for .env file in current directory
+    env_path = Path(".env")
+    
+    if env_path.exists():
+        load_dotenv(env_path)
+        print(f"Loaded environment variables from: {env_path.absolute()}")
+        return True
+    
+    print("No .env file found. Create one to store API keys permanently.")
+    return False
 
 # ============================================================================
 # CONFIGURATION & MODEL DEFINITIONS
@@ -14,15 +42,13 @@ import sys
 
 AVAILABLE_MODELS = {
     "planning": {
-        "1": {"name": "gemini-2.0-flash-exp", "display": "Gemini 2.0 Flash Experimental (Fast, Cost-Effective)", "provider": "google"},
-        "2": {"name": "gemini-2.5-flash", "display": "Gemini 2.5 Flash (Balanced Performance)", "provider": "google"},
-        "3": {"name": "gemini-2.5-pro", "display": "Gemini 2.5 Pro (Most Capable)", "provider": "google"},
+        "1": {"name": "gemini-2.5-flash", "display": "Gemini 2.5 Flash (Free Tier)", "provider": "google"},
+        "2": {"name": "gemini-3-flash-preview", "display": "Gemini 3.0 Flash", "provider": "google"},
+        "3": {"name": "gemini-3.1-pro-preview", "display": "Gemini 3.1 Pro", "provider": "google"},
     },
     "coding": {
-        "1": {"name": "gpt-4.1", "display": "GPT-4.1 (Reliable)", "provider": "openai"},
-        "2": {"name": "gpt-5.1", "display": "GPT-5.1 (Advanced)", "provider": "openai"},
-        "3": {"name": "claude-sonnet-4-5-20250929", "display": "Claude Sonnet 4.5 (Code Expert)", "provider": "anthropic"},
-        "4": {"name": "gemini-2.5-pro", "display": "Gemini 2.5 Pro (Versatile)", "provider": "google"},
+        "1": {"name": "gpt-5.2", "display": "GPT-5.2", "provider": "openai"},
+        "2": {"name": "claude-sonnet-4-6", "display": "Claude Sonnet 4.6", "provider": "anthropic"},
     }
 }
 
@@ -44,9 +70,9 @@ def print_banner():
     banner = """
 ╔═══════════════════════════════════════════════════════════════════╗
 ║                                                                   ║
-║        🤖 FEDERATED LEARNING AGENTIC SYSTEM 🤖                   ║
+║                       🤖 Helmsman 🤖                             ║
 ║                                                                   ║
-║     Automated Research Planning & Code Generation System         ║
+║          Automated Federated Learning System Generation           ║
 ║                                                                   ║
 ╚═══════════════════════════════════════════════════════════════════╝
     """
@@ -461,6 +487,8 @@ def main():
     try:
         # Welcome banner
         print_banner()
+        load_env_file()
+
         print("\nWelcome! This system will help you:")
         print("  1️⃣  Plan your federated learning research")
         print("  2️⃣  Generate complete FL code implementation")

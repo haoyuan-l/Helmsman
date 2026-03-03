@@ -101,6 +101,7 @@ pip install soundfile
 ### 3. Install Agent Framework
 Install LangChain, LangGraph, and provider packages for the LLM agents.
 ```bash
+pip install python-dotenv
 pip install tree-sitter
 pip install -U langchain
 pip install -U langchain-openai
@@ -108,6 +109,26 @@ pip install -U langchain-anthropic
 pip install -U langchain-google-genai
 pip install -U langgraph
 pip install huggingface-hub
+```
+
+## 🔑 API Configuration
+
+Helmsman requires API keys from various LLM providers. We recommend using a `.env` file to manage your keys securely.
+
+**1. Create a `.env` file in the project root directory**
+
+**2. Edit `.env` and add your API keys:**
+
+```env
+# Required API Keys
+GOOGLE_API_KEY=your_google_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Utility APIs (required for tools)
+VOYAGE_API_KEY=your_voyage_api_key_here
+COHERE_API_KEY=your_cohere_api_key_here
+TAVILY_API_KEY=your_tavily_api_key_here
 ```
 
 ## 🚀 Usage

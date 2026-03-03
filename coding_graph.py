@@ -54,6 +54,60 @@ CODEBASE_DIR.mkdir(exist_ok=True)
 print(f"📁 Codebase directory: {CODEBASE_DIR.absolute()}")
 
 # === Helper Functions ===
+def get_llm_instance(model_name: str, temperature: float = 0, max_tokens: int = 8192, rate_limiter=None):
+    """
+    Automatically instantiate the correct LLM provider based on model name.
+    
+    Args:
+        model_name: Name of the model (e.g., "gpt-5.2", "claude-sonnet-4-6", "gemini-2.5-flash")
+        temperature: Temperature setting for generation
+        max_tokens: Maximum tokens for generation
+        rate_limiter: Optional rate limiter instance
+    
+    Returns:
+        Configured LLM instance (ChatOpenAI, ChatAnthropic, or ChatGoogleGenerativeAI)
+    """
+    model_lower = model_name.lower()
+    
+    # Detect provider from model name
+    if "gpt" in model_lower or "openai" in model_lower:
+        # OpenAI models
+        return ChatOpenAI(
+            model=model_name,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            max_retries=5,
+            rate_limiter=rate_limiter,
+        )
+    elif "claude" in model_lower or "anthropic" in model_lower:
+        # Anthropic models
+        return ChatAnthropic(
+            model=model_name,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            max_retries=5,
+            rate_limiter=rate_limiter,
+        )
+    elif "gemini" in model_lower or "google" in model_lower:
+        # Google models
+        return ChatGoogleGenerativeAI(
+            model=model_name,
+            temperature=temperature,
+            max_output_tokens=max_tokens,
+            max_retries=5,
+            rate_limiter=rate_limiter,
+        )
+    else:
+        # Default to OpenAI if provider cannot be determined
+        print(f"⚠️ Warning: Could not determine provider for model '{model_name}'. Defaulting to OpenAI.")
+        return ChatOpenAI(
+            model=model_name,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            max_retries=5,
+            rate_limiter=rate_limiter,
+        )
+
 def kill_process_tree(pid):
     """Kill a process and all its children."""
     try:
@@ -353,25 +407,11 @@ def task_module_coder(state: SupervisorState) -> SupervisorState:
     require_debugging = state.get("task_require_debugging", False)
     pass_status = state.get("task_pass_status", False)
 
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
 
     # llm_with_tools = llm.bind_tools([code_tool, search_tool])
@@ -675,25 +715,11 @@ def task_module_test(state: SupervisorState) -> SupervisorState:
     # Get task description for context
     task_description = state.get("task_module_task", "")
     
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
     
     prompt = f"""You are a code testing agent for a Federated Learning project using the FLOWER framework.
@@ -840,25 +866,11 @@ def client_module_coder(state: SupervisorState) -> SupervisorState:
     require_debugging = state.get("client_require_debugging", False)
     pass_status = state.get("client_pass_status", False)
 
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
 
     # llm_with_tools = llm.bind_tools([code_tool, search_tool])
@@ -1026,25 +1038,11 @@ def client_module_test(state: SupervisorState) -> SupervisorState:
     
     task_description = state.get("client_module_task", "")
     
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
     
     prompt = f"""You are a code testing agent for a Federated Learning project using the FLOWER framework. 
@@ -1150,25 +1148,11 @@ def strategy_module_coder(state: SupervisorState) -> SupervisorState:
     require_debugging = state.get("strategy_require_debugging", False)
     pass_status = state.get("strategy_pass_status", False)
 
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
     
     # llm_with_tools = llm.bind_tools([code_tool, search_tool])
@@ -1326,25 +1310,11 @@ def strategy_module_test(state: SupervisorState) -> SupervisorState:
     
     task_description = state.get("strategy_module_task", "")
     
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
 
     prompt = f"""You are a code testing agent for a Federated Learning project using the FLOWER framework.
@@ -1439,25 +1409,11 @@ def server_module_coder(state: SupervisorState) -> SupervisorState:
     require_debugging = state.get("server_require_debugging", False)
     pass_status = state.get("server_pass_status", False)
 
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
 
     # llm_with_tools = llm.bind_tools([code_tool, search_tool])
@@ -1639,25 +1595,11 @@ def server_module_test(state: SupervisorState) -> SupervisorState:
     
     task_description = state.get("server_module_task", "")
     
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
 
     prompt = f"""You are a code testing agent for a Federated Learning project using the FLOWER framework.
@@ -1783,25 +1725,11 @@ def orchestrator_node(state: OchestrationState) -> OchestrationState:
     require_debugging = state.get("run_require_debugging", False)
     pass_status = state.get("run_pass_status", False)
 
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
     
     if pass_status:
@@ -1907,25 +1835,11 @@ def orchestrator_test(state: OchestrationState) -> OchestrationState:
             }
         )
 
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
 
     prompt = f"""You are a code testing agent for a Federated Learning project using the FLOWER framework.
@@ -2173,28 +2087,14 @@ def evaluator_node(state: EvaluationState) -> EvaluationState:
                 }
             )
         
-        # Use LLM for additional analysis if no obvious errors
-        # llm = ChatAnthropic(
-        #     # model="claude-sonnet-4-20250514",
-        #     model=code_model,
-        #     temperature=0,
-        #     max_tokens=8192,
-        #     # temperature=1,
-        #     # thinking={"type": "enabled", "budget_tokens": 2000},
-        #     max_retries=5,
-        #     rate_limiter=rate_limiter,
-        # )
-
-        llm = ChatOpenAI(
-            model=code_model,
+        # Use LLM for additional analysis if no obvious errors found
+        llm = get_llm_instance(
+            model_name=code_model,
             temperature=0,
             max_tokens=8192,
-            # temperature=1,
-            # thinking={"type": "enabled", "budget_tokens": 2000},
-            max_retries=5,
-            rate_limiter=rate_limiter,
+            rate_limiter=rate_limiter
         )
-        
+
         analysis_prompt = f"""
         Analyze this FL simulation output and determine if it ran successfully.
         Return Code: {returncode}
@@ -2311,26 +2211,11 @@ def simulation_debugger(state: EvaluationState) -> EvaluationState:
     }
     
     # Initialize LLM
-
-    # llm = ChatAnthropic(
-    #     # model="claude-sonnet-4-20250514",
-    #     model=code_model,
-    #     temperature=0,
-    #     max_tokens=8192,
-    #     # temperature=1,
-    #     # thinking={"type": "enabled", "budget_tokens": 2000},
-    #     max_retries=5,
-    #     rate_limiter=rate_limiter,
-    # )
-
-    llm = ChatOpenAI(
-        model=code_model,
+    llm = get_llm_instance(
+        model_name=code_model,
         temperature=0,
         max_tokens=8192,
-        # temperature=1,
-        # thinking={"type": "enabled", "budget_tokens": 2000},
-        max_retries=5,
-        rate_limiter=rate_limiter,
+        rate_limiter=rate_limiter
     )
     
     prompt = f"""You are a Simulation Debugger for a Federated Learning project using FLOWER framework.
