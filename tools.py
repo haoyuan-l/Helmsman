@@ -40,13 +40,13 @@ else:
 reranker = CohereRerank(model="rerank-v3.5") if os.environ.get("COHERE_API_KEY") else None
 
 # === 1. Search Tool ===
-try:
-    tavily_search_tool = TavilySearch(max_results=3, topic="general")
-except Exception as e:
-    print(f"Warning: Failed to initialize Tavily search: {e}")
-    tavily_search_tool = None
-
 def web_search(query: str) -> str:
+    try:
+        tavily_search_tool = TavilySearch(max_results=3, topic="general")
+    except Exception as e:
+        print(f"Warning: Failed to initialize Tavily search: {e}")
+        tavily_search_tool = None
+
     """Search the web for current information using Tavily."""
     if not tavily_search_tool:
         return "Web search is not available. Please check your Tavily API key."
