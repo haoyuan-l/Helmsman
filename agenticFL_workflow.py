@@ -47,7 +47,7 @@ AVAILABLE_MODELS = {
         "3": {"name": "gemini-3.1-pro-preview", "display": "Gemini 3.1 Pro", "provider": "google"},
     },
     "coding": {
-        "1": {"name": "gpt-5.2", "display": "GPT-5.2", "provider": "openai"},
+        "1": {"name": "gpt-5.4", "display": "GPT-5.4", "provider": "openai"},
         "2": {"name": "claude-sonnet-4-6", "display": "Claude Sonnet 4.6", "provider": "anthropic"},
     }
 }

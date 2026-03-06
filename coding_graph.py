@@ -403,7 +403,7 @@ def supervisor_base_node(state: SupervisorState) -> SupervisorState:
 # === Coder Node for Task Module ===
 def task_module_coder(state: SupervisorState) -> SupervisorState:
     task = state.get("task_module_task", "")
-    codebase_task = load_code_from_file("task_module")
+    codebase_task = load_code_from_file("task")
     require_debugging = state.get("task_require_debugging", False)
     pass_status = state.get("task_pass_status", False)
 
@@ -1654,6 +1654,7 @@ def server_module_test(state: SupervisorState) -> SupervisorState:
     ## 7. PARAMETER HANDLING
     - Are model parameters properly converted using ndarrays_to_parameters?
     - Is parameter conversion in evaluate function correct (parameters_ndarrays to model state_dict)?
+    - Is the training round set to 3 rounds for testing purposes?
 
     ## 8. FLOWER FRAMEWORK SCALAR VALIDATION
     - ALL values in configuration dictionaries and metrics dictionaries MUST be scalar types only
@@ -2387,7 +2388,7 @@ def create_coding_workflow(
     # builder.add_edge("orchestrator_test", "orchestrator_node")
 
     # server and ochestrator edges
-    builder.add_edge("server_module_coder", "orchestrator_node")
+    # builder.add_edge("server_module_coder", "orchestrator_node")
 
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
