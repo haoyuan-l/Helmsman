@@ -25,6 +25,7 @@ Decentralized Artificial Intelligence Research Lab, Eindhoven University of Tech
 
 ## 📢 Updates
 
+* **[04/2026]** 📱 **App Release:** **Helmsman** now is available at [Flower App Hub](https://flower.ai/apps/beothuk/Helmsman/)! Supporting Flower CLI!🤩
 * **[02/2026]** 🚀 **Code Release:** The official implementation and **AgentFL-Bench** are now available.
 * **[02/2026]** 🌐 **Project Page:** We have released the [project page](https://haoyuan-l.github.io/helmsman-web/) with demos and visualizations.
 * **[01/2026]** 🎉 **Acceptance:** **Helmsman** has been accepted to **ICLR 2026**!
