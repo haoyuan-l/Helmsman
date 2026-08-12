@@ -208,10 +208,12 @@ We evaluated Helmsman against state-of-the-art code synthesis pipelines—**Code
 If you find **Helmsman** or **AgentFL-Bench** useful for your research, please cite our **ICLR 2026** paper:
 
 ```bibtex
-@article{li2025helmsman,
+@inproceedings{li2026helmsman,
   title={Helmsman: Autonomous Synthesis of Federated Learning Systems via Collaborative LLM Agents},
   author={Li, Haoyuan and Funk, Mathias and Saeed, Aaqib},
-  journal={arXiv preprint arXiv:2510.14512},
-  year={2025}
+  booktitle={International Conference on Learning Representations},
+  volume={2026},
+  pages={16788--16828},
+  year={2026}
 }
 ```
